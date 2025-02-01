@@ -5,6 +5,7 @@ from urllib.request import Request
 from urllib.error import URLError
 from urllib.parse import urlencode, quote_plus
 from playsound import playsound
+import pygame
 
 class BaiduTTS:
     """百度语音合成类"""
@@ -55,6 +56,12 @@ class BaiduTTS:
     def text_to_speech(self, text):
         """将文本转换为语音并播放"""
         token = self.fetch_token()  # 获取 token
+        
+        # print("token:", token)
+        if len(text) > 500:
+            print("text length is out of max limit")
+        else:
+            print("text len:", len(text))
         tex = quote_plus(text)  # URL 编码文本
         params = {
             'tok': token,
@@ -83,7 +90,7 @@ class BaiduTTS:
             result_str = err.read()
             has_error = True
 
-        save_file = "error.txt" if has_error else f'result.{self.FORMAT}'
+        save_file = "error.txt" if has_error else f'result1.{self.FORMAT}'
         with open(save_file, 'wb') as of:
             of.write(result_str)
 
@@ -91,12 +98,26 @@ class BaiduTTS:
             print(f"TTS API 错误: {result_str.decode('utf-8')}")
         else:
             print(f"语音合成结果已保存为: {save_file}")
+
+            
+
+def play_audio(file):
+    pygame.mixer.init()  # 初始化音频播放
+    pygame.mixer.music.load(file)  # 加载音频文件
+    pygame.mixer.music.play()  # 播放音频
+
+
+
+
+
             
 # 如果你想直接测试这个模块，可以在这里调用
 if __name__ == '__main__':
     tts = BaiduTTS(
-        app_id="39014101", 
-        api_key="Lba7nCPGulvBRPi9rhIlSo6b", 
-        secret_key="PDktguZiKvI5LdrM9xNx7rP5Ck2HGXBp"
+        app_id="117214641", 
+        api_key="IMI61WO3ZJkWbNDxEmA8trnP", 
+        secret_key="LKsRieJPGKcrDYErYvrguHeDwZ7iMf7r"
     )
-    tts.text_to_speech("欢迎使用百度语音合成。")
+    tts.text_to_speech("欢迎使用百度语音合成")
+    # 使用示例
+    play_audio('result1.mp3')
