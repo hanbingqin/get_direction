@@ -2,8 +2,8 @@ import requests
 from geopy import distance
 
 class NavigateUser:
-    def __init__(self, voice_assistant, api_key):
-        self.api_key = api_key
+    def __init__(self, voice_assistant):
+        self.api_key = '817bc7a94413df38442cc19ce29588a7'
         self.user_step_navigation = False
         self.voice_assistant = voice_assistant
         self.user_coord = [80.18016943867312, 13.078225002745956]  # 默认坐标，实际应用中可以获取实时GPS坐标

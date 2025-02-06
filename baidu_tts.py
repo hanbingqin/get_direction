@@ -5,8 +5,9 @@ from urllib.request import Request
 from urllib.error import URLError
 from urllib.parse import urlencode, quote_plus
 from playsound import playsound
-import pygame
-
+import datetime
+from pydub import AudioSegment
+from pydub.playback import play
 class BaiduTTS:
     """百度语音合成类"""
     def __init__(self, app_id, api_key, secret_key):
@@ -20,12 +21,13 @@ class BaiduTTS:
         self.CUID = "123456PYTHON"  # 用户标识（可以自定义）
 
         self.PER = 4  # 发音人选择，默认为度丫丫（4）
-        self.SPD = 10  # 语速（0-15），默认为5
+        self.SPD = 6  # 语速（0-15），默认为5
         self.PIT = 5   # 音调（0-15），默认为5
-        self.VOL = 5   # 音量（0-9），默认为5
+        self.VOL = 9   # 音量（0-9），默认为5
         self.AUE = 3   # 下载的文件格式，3：mp3（默认），4：pcm-16k，5：pcm-8k，6：wav
         self.FORMATS = {3: "mp3", 4: "pcm", 5: "pcm", 6: "wav"}
         self.FORMAT = self.FORMATS[self.AUE]
+        print("init TTS successfully!")
 
     def fetch_token(self):
         """获取百度语音合成的 token"""
@@ -89,8 +91,15 @@ class BaiduTTS:
             print(f'ASR http response http code: {err.code}')
             result_str = err.read()
             has_error = True
+        
 
-        save_file = "error.txt" if has_error else f'result1.{self.FORMAT}'
+        # 获取当前时间并格式化为字符串
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # 使用时间戳创建文件名
+        save_file = f"error_{timestamp}.txt" if has_error else f'result_{timestamp}.{self.FORMAT}'
+
+        # save_file = "error.txt" if has_error else f'result1.{self.FORMAT}'
         with open(save_file, 'wb') as of:
             of.write(result_str)
 
@@ -98,13 +107,33 @@ class BaiduTTS:
             print(f"TTS API 错误: {result_str.decode('utf-8')}")
         else:
             print(f"语音合成结果已保存为: {save_file}")
+            
+        return save_file
 
             
 
-def play_audio(file):
-    pygame.mixer.init()  # 初始化音频播放
-    pygame.mixer.music.load(file)  # 加载音频文件
-    pygame.mixer.music.play()  # 播放音频
+def play_audio1(file_path):
+    # subprocess.run(['ffmpeg', '-nostats', '-loglevel', '0', '-i', file, '-f', 'null', '-'])
+    audio = AudioSegment.from_file(file_path)
+    # 播放音频
+    play(audio)
+
+def play_audio(file_path):
+    # 初始化pygame
+    pygame.mixer.init()
+
+    # 加载音频文件
+    pygame.mixer.music.load(file_path)
+
+    # 播放音频
+    pygame.mixer.music.play()
+
+    # 等待音频播放完成
+    while pygame.mixer.music.get_busy():  # 检查是否正在播放
+        pygame.time.Clock().tick(10)  # 每10毫秒检查一次
+
+
+
 
 
 
@@ -118,6 +147,6 @@ if __name__ == '__main__':
         api_key="IMI61WO3ZJkWbNDxEmA8trnP", 
         secret_key="LKsRieJPGKcrDYErYvrguHeDwZ7iMf7r"
     )
-    tts.text_to_speech("欢迎使用百度语音合成")
+    tts.text_to_speech("我是语音助手，很高兴能帮助你，请注意周围环境安全")
     # 使用示例
-    play_audio('result1.mp3')
+    # play_audio('result1.mp3')

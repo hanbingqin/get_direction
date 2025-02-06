@@ -1,11 +1,11 @@
 import time
 import serial
 import pynmea2
+from picamera2 import Picamera2
 import threading 
-from mpu6050 import mpu6050
 import math
-from gsmmodem.modem import GsmModem, SentSms
-from gsmmodem.exceptions import InterruptedException, CommandError
+# from gsmmodem.modem import GsmModem, SentSms
+# from gsmmodem.exceptions import InterruptedException, CommandError
 import gpiod
 
 
@@ -21,6 +21,8 @@ class piAPI():
 		self.fallDetected = False	
 		self.setupVibrate()
 		self.GSMActive = False
+		self.picam2 = None
+		self.start_capture()
 	
 	def send_at(self,command,back,timeout):
 		rec_buff = ''
@@ -83,5 +85,19 @@ class piAPI():
 		finally:
 			self.led_line.release()
 	
+
+	 # 启动相机的方法
+	def start_capture(self):
+		if self.picam2 is None:
+			self.picam2 = Picamera2()  # 初始化相机
+			self.picam2.configure(self.picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))  # 配置相机
+			self.picam2.start()  # 启动相机
+		print("Camera capture started.")
+    
+    # 停止相机的方法
+	def stop_capture(self):
+		if self.picam2:
+			self.picam2.stop()  # 停止相机
+			print("Camera capture stopped.")
 
    

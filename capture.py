@@ -9,13 +9,13 @@ class WebcamCapture:
         self.camera_index = camera_index
         self.camera = None
 
-    def start_capture(self):
-       self.picam2 = Picamera2()
-       self.picam2.configure(self.picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
-       self.picam2.start()
+    # def start_capture(self):
+    #    self.picam2 = Picamera2()
+    #    self.picam2.configure(self.picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+    #    self.picam2.start()
 
-    def capture_frame(self, save_path=None):
-        frame = self.picam2.capture_array()
+    def capture_frame(self,picam2, save_path=None):
+        frame = picam2.capture_array()
            
         if save_path:
             cv2.imwrite(save_path, frame)
@@ -26,11 +26,11 @@ class WebcamCapture:
     def stop_capture(self):
         cv2.destroyAllWindows()
 
-    def capture_photo(self, save_path="./captured_image.jpg"):
-        self.start_capture()
+    def capture_photo(self, picam2, save_path="./captured_image.jpg"):
+        # self.start_capture()
         time.sleep(2)
         while True:
-            if not self.capture_frame(save_path):
+            if not self.capture_frame(picam2, save_path):
                 break
         self.stop_capture()
         return os.path.abspath(save_path)
